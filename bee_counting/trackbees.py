@@ -2,14 +2,13 @@
 
 import sys
 import argparse
+import cv2 as cv
 
 #maxtravel=90
 #maxshift=10
 
 #boundary=150
 #framelen=582
-
-f=open("data.txt","r")
 
 currentBees={}
 lostBees={}
@@ -59,6 +58,7 @@ def processFrame(_currentBees, _frame, _frameNumber, _maxshift, _maxtravel,_boun
             print "Bee "+str(_beeCounter)+" new "+str(_spot)+" on frame "+str(_frameNumber)
             _newBees[_beeCounter]=_spot
         elif _distanceBee <= _maxtravel:
+            #this area needs to be fixed for the double exits
             #detect a double match to the spot (two bees within the travel range)
             if _nearBee in _newBees:
                 #if the old bee was in entry detection areas
@@ -162,6 +162,24 @@ def processFrame(_currentBees, _frame, _frameNumber, _maxshift, _maxtravel,_boun
     #return bees in current frame as well as those lost, the total number of bees and missing
     return _currentBees,_lostBees,_beeCounter, _missingBees
 
+def numberBeeVideo(_currentBees,_vidin,_vidout,_frameNumber):
+    #figure out how not to do an iteritems here
+    for _key,_value in _currentBees.iteritems():
+        while _frameNumber<int(_value['frame']):
+            print "empty frame "+str(_frameNumber)
+            #error checking for success here
+            _success,_image = _vidin.read()
+            _vidout.write(_image)
+            _frameNumber+=1
+    #error checking for success here
+    _success,_image = _vidin.read()
+    for key,value in _currentBees.iteritems():
+        cv.putText(_image,str(key),(value['spot'][-1][0]-20,value['spot'][-1][1]),cv.FONT_HERSHEY_SIMPLEX,1,(255,0,0),2,cv.LINE_AA)
+    _vidout.write(_image)
+    _frameNumber+=1
+    return _frameNumber
+          
+    
 
 parser=argparse.ArgumentParser(description="Uses output of findbees.py to determine the number and direction of bee travel")
 requiredNamed=parser.add_argument_group('required arguments')
@@ -169,7 +187,9 @@ requiredNamed.add_argument('-i','--input',required=True, help="Data file from fi
 parser.add_argument('-s','--maxshift', type=int, default=10, help='Maximum change in X value for a bee lane, default 10')
 parser.add_argument('-t','--maxtravel', type=int, default=90, help='Maximum y distance a bee can travel between frames, default 90')
 parser.add_argument('-b','--boundary', type=int, default=150, help='Y dimension zone length in which a bee can enter or exit, default 150')
-parser.add_argument('-l','--framelen', type=int, default=582, help='Y dimension of the frame, default 582') 
+parser.add_argument('-l','--framelen', type=int, default=582, help='Y dimension of the frame, default 582')
+parser.add_argument('-v','--videoIn', help="Video file to number")
+parser.add_argument('-o','--videoOut', help="Number video file output")
 _args=vars(parser.parse_args())
 
 f=open(_args['input'],"r")
@@ -179,17 +199,32 @@ tmpary=[]
 allMissing={}
 beeCounter=0
 allLostBees={}
+
+if 'videoIn' in _args and 'videoOut' in _args:
+    print "--videoIn and --videoOut are present, proceeding with video processing"
+    vidin = cv.VideoCapture(_args["videoIn"])
+    width = float(vidin.get(cv.CAP_PROP_FRAME_WIDTH))   # float
+    height = float(vidin.get(cv.CAP_PROP_FRAME_HEIGHT)) # float
+    vidout = cv.VideoWriter(_args["videoOut"],0x7634706d,30,(int(width),int(height)))
+    frameNumber=0
+else:
+    print "--videoIn and/or --videoOut are not defined, proceeding with text only"
+    
 for _line in f:
     _lineary=_line.split()
     if(_lineary[0] != thisframe):
         if(thisframe != "0"):
             currentBees,lostBees, beeCounter, missing = processFrame(currentBees,tmpary, thisframe, _args['maxshift'], _args['maxtravel'],_args['boundary'],_args['framelen'],beeCounter)
+            if 'videoIn' in _args and 'videoOut' in _args:
+                frameNumber=numberBeeVideo(currentBees,vidin,vidout,frameNumber)
             allLostBees.update(lostBees)
             allMissing.update(missing)
         thisframe=_lineary[0]
         tmpary=[]
     tmpary.append([int(_lineary[1]),int(_lineary[2])])
 currentBees, lostBees, beeCounter, missing = processFrame(currentBees,tmpary, thisframe, _args['maxshift'], _args['maxtravel'],_args['boundary'],_args['framelen'],beeCounter)
+if 'videoIn' in _args and 'videoOut' in _args:
+    frameNumber=numberBeeVideo(currentBees,vidin,vidout,frameNumber)
 allLostBees.update(lostBees)
 allMissing.update(missing)
 
