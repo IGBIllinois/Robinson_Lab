@@ -6,12 +6,12 @@ USAGE:
 # trackbees.py
 Companion program of trackbees.py.  This program takes the .txt file from findbees.py to create statistics based on where bees entered and exited.  If the optional video created by findbees.py is also included, it will overlay the number of each bee over the appropriate bee in the video file.  This helps with debugging.
 
-`USAGE:`
-`./trackbees.py -i results/vid7data.txt -l 704 -b 100 -s 20 -t 200 -v results/tracked-video007.mp4 -o numbered7.mp4`
-`-i filename    This is the text file created by findbees.py`
-`-l integer     The height of a frame in pixels.  This will attempt to be auto detected in a future version.`
-`-b integer     The boundary for bees to enter or exit in pixels.`
-`-s integer     The amount a column of bees can shift left or right in pixels.`
-`-t integer     The maximum amount a bee can travel between frames in pixels.`
-`-v filename    Optional video file created by findbees.py`
-`-o filename    Optional video to create with bee numbers overlayed.`
+```USAGE:```
+```./trackbees.py -i results/vid7data.txt -l 704 -b 100 -s 20 -t 200 -v results/tracked-video007.mp4 -o numbered7.mp4```
+- -i filename    This is the text file created by findbees.py
+- -l integer     The height of a frame in pixels.  This will attempt to be auto detected in a future version.
+- -b integer     The boundary for bees to enter or exit in pixels.
+- -s integer     The amount a column of bees can shift left or right in pixels.
+- -t integer     The maximum amount a bee can travel between frames in pixels.
+- -v filename    Optional video file created by findbees.py
+- -o filename    Optional video to create with bee numbers overlayed.
