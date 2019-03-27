@@ -18,3 +18,5 @@ usage: trackbees.py [-h] -i INPUT [-s MAXSHIFT] [-t MAXTRAVEL] [-b BOUNDARY]
 - `-t integer`		The maximum amount a bee can travel between frames in pixels.
 - `-v filename`		Optional video file created by findbees.py
 - `-o filename`		Optional video to create with bee numbers overlayed.
+
+The bee statistics including information on bees with tracking errors is returned in standard out when running this program.
