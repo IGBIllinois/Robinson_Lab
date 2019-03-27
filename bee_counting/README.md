@@ -16,6 +16,6 @@ usage: trackbees.py [-h] -i INPUT [-s MAXSHIFT] [-t MAXTRAVEL] [-b BOUNDARY]
 - `-l integer     `The height of a frame in pixels.  This will attempt to be auto detected in a future version.
 - `-b integer     `The boundary for bees to enter or exit in pixels.
 - `-s integer     `The amount a column of bees can shift left or right in pixels.
-- `-t integer	`The maximum amount a bee can travel between frames in pixels.
-- `-v filename	`Optional video file created by findbees.py
-- `-o filename	`Optional video to create with bee numbers overlayed.
+- `-t integer`    The maximum amount a bee can travel between frames in pixels.
+- `-v filename`   Optional video file created by findbees.py
+- `-o filename`   Optional video to create with bee numbers overlayed.
